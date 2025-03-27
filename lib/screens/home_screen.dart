@@ -1,14 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
 import '../utils/duration_format.dart';
 import '../services/task_storage.dart';
-// import 'stats_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../services/notification_service.dart';
 import 'task_history_screen.dart';
 import 'task_calendar_screen.dart';
-import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -50,6 +50,19 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     setState(() => tasks = loaded);
+
+    // Schedule reminders for daily tasks at 8:00 AM
+    for (var task in tasks) {
+      if (task.interval == 'daily') {
+        await NotificationService.scheduleDailyReminder(
+          id: task.hashCode,
+          title: 'Reminder: ${task.title}',
+          body: 'Don’t forget to work on your "${task.title}" task!',
+          hour: 8,
+          minute: 0,
+        );
+      }
+    }
   }
 
   void _saveTasks() => TaskStorage.saveTasks(tasks);
@@ -112,13 +125,27 @@ class _HomeScreenState extends State<HomeScreen> {
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 final title = titleController.text.trim();
                 if (title.isNotEmpty) {
+                  final newTask =
+                      Task(title: title, interval: selectedInterval);
                   setState(() {
-                    tasks.add(Task(title: title, interval: selectedInterval));
+                    tasks.add(newTask);
                     _saveTasks();
                   });
+
+                  if (selectedInterval == 'daily') {
+                    await NotificationService.scheduleDailyReminder(
+                      id: newTask.hashCode,
+                      title: 'Reminder: ${newTask.title}',
+                      body:
+                          'Don’t forget to work on your "${newTask.title}" task!',
+                      hour: 8,
+                      minute: 0,
+                    );
+                  }
+
                   Navigator.pop(context);
                 }
               },

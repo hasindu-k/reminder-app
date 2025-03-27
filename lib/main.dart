@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
+import 'services/notification_service.dart';
 
-void main() => runApp(TaskTimerApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.init();
+  runApp(TaskTimerApp());
+}
 
 class TaskTimerApp extends StatelessWidget {
   @override
