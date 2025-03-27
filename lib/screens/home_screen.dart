@@ -4,7 +4,10 @@ import '../models/task.dart';
 import '../widgets/task_tile.dart';
 import '../utils/duration_format.dart';
 import '../services/task_storage.dart';
-import 'stats_screen.dart';
+// import 'stats_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'task_history_screen.dart';
+import 'task_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -27,9 +30,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _loadTasks() async {
     final loaded = await TaskStorage.loadTasks();
-    setState(() {
-      tasks = loaded;
-    });
+    final prefs = await SharedPreferences.getInstance();
+
+    final now = DateTime.now();
+    final todayKey = '${now.year}-${now.month}-${now.day}';
+    final lastOpened = prefs.getString('lastOpenedDate');
+
+    if (lastOpened != todayKey) {
+      // New day — reset timeSpent and log to history
+      for (var task in loaded) {
+        if (task.interval == 'daily' && task.timeSpent.inSeconds > 0) {
+          task.history[lastOpened ?? todayKey] = task.timeSpent.inSeconds;
+          task.timeSpent = Duration.zero;
+        }
+      }
+      await prefs.setString('lastOpenedDate', todayKey);
+      await TaskStorage.saveTasks(loaded);
+    }
+
+    setState(() => tasks = loaded);
   }
 
   void _saveTasks() => TaskStorage.saveTasks(tasks);
@@ -82,14 +101,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     selectedInterval = value;
                   }
                 },
-                decoration: InputDecoration(labelText: 'Interval'),
+                decoration: const InputDecoration(labelText: 'Interval'),
               ),
             ],
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             ElevatedButton(
               onPressed: () {
@@ -102,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Navigator.pop(context);
                 }
               },
-              child: Text('Add'),
+              child: const Text('Add'),
             ),
           ],
         );
@@ -192,7 +211,19 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => StatsScreen(tasks: tasks)),
+                MaterialPageRoute(
+                    builder: (_) => TaskHistoryScreen(tasks: tasks)),
+              );
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.calendar_month),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => TaskCalendarScreen(tasks: tasks),
+                ),
               );
             },
           ),
