@@ -4,11 +4,13 @@ import '../models/task.dart';
 class TaskTile extends StatelessWidget {
   final Task task;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final bool isActive;
 
   const TaskTile({
     required this.task,
     required this.onTap,
+    this.onLongPress,
     this.isActive = false,
   });
 
@@ -21,6 +23,7 @@ class TaskTile extends StatelessWidget {
       trailing: Chip(label: Text(task.interval)),
       tileColor: isActive ? Colors.blue.shade50 : null,
       onTap: onTap,
+      onLongPress: onLongPress,
     );
   }
 }

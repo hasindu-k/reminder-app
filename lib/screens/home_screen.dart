@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/task.dart';
 import '../widgets/task_tile.dart';
 import '../utils/duration_format.dart';
+import '../services/task_storage.dart';
+import 'stats_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -14,19 +16,23 @@ class _HomeScreenState extends State<HomeScreen> {
   bool isRunning = false;
   Timer? _timer;
 
-  List<Task> tasks = [
-    Task(title: 'Write Journal'),
-    Task(title: 'Exercise'),
-    Task(title: 'Read Book'),
-  ];
-
+  List<Task> tasks = [];
   Task? activeTask;
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  void initState() {
+    super.initState();
+    _loadTasks();
   }
+
+  Future<void> _loadTasks() async {
+    final loaded = await TaskStorage.loadTasks();
+    setState(() {
+      tasks = loaded;
+    });
+  }
+
+  void _saveTasks() => TaskStorage.saveTasks(tasks);
 
   void _toggleTimer() {
     setState(() => isRunning = !isRunning);
@@ -37,6 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
           setState(() {
             timerValue += Duration(seconds: 1);
             activeTask!.timeSpent += Duration(seconds: 1);
+            _saveTasks();
           });
         }
       });
@@ -90,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (title.isNotEmpty) {
                   setState(() {
                     tasks.add(Task(title: title, interval: selectedInterval));
+                    _saveTasks();
                   });
                   Navigator.pop(context);
                 }
@@ -102,10 +110,94 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  void _showTaskOptions(BuildContext context, Task task) {
+    final titleController = TextEditingController(text: task.title);
+    String selectedInterval = task.interval;
+
+    showModalBottomSheet(
+      context: context,
+      builder: (_) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('Edit Task', style: Theme.of(context).textTheme.titleLarge),
+              const SizedBox(height: 8),
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(labelText: 'Task Title'),
+              ),
+              DropdownButtonFormField<String>(
+                value: selectedInterval,
+                items: ['daily', 'weekly']
+                    .map((i) => DropdownMenuItem(value: i, child: Text(i)))
+                    .toList(),
+                onChanged: (val) => selectedInterval = val ?? selectedInterval,
+                decoration: InputDecoration(labelText: 'Interval'),
+              ),
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.delete),
+                    label: Text('Delete'),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    onPressed: () {
+                      setState(() {
+                        tasks.remove(task);
+                        if (activeTask == task) activeTask = null;
+                        _saveTasks();
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                  ElevatedButton.icon(
+                    icon: Icon(Icons.save),
+                    label: Text('Save'),
+                    onPressed: () {
+                      setState(() {
+                        task.title = titleController.text.trim();
+                        task.interval = selectedInterval;
+                        _saveTasks();
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                ],
+              )
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Task Timer')),
+      appBar: AppBar(
+        title: Text('Task Timer'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.bar_chart),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => StatsScreen(tasks: tasks)),
+              );
+            },
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -133,17 +225,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
                   final task = tasks[index];
-                  return TaskTile(
-                    task: task,
-                    isActive: task == activeTask,
-                    onTap: () {
-                      setState(() {
-                        activeTask = task;
-                        timerValue = activeTask!.timeSpent;
-                        isRunning = false;
-                        _timer?.cancel();
-                      });
-                    },
+                  return GestureDetector(
+                    onLongPress: () => _showTaskOptions(context, task),
+                    child: TaskTile(
+                      task: task,
+                      isActive: task == activeTask,
+                      onTap: () {
+                        setState(() {
+                          activeTask = task;
+                          timerValue = activeTask!.timeSpent;
+                          isRunning = false;
+                          _timer?.cancel();
+                        });
+                      },
+                      onLongPress: () => _showTaskOptions(context, task),
+                    ),
                   );
                 },
               ),
