@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 void main() => runApp(TaskTimerApp());
 
@@ -24,8 +25,31 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   Duration timerValue = Duration.zero;
   bool isRunning = false;
+  Timer? _timer;
 
   List<String> tasks = ['Write Journal', 'Exercise', 'Read Book'];
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _toggleTimer() {
+    setState(() {
+      isRunning = !isRunning;
+    });
+
+    if (isRunning) {
+      _timer = Timer.periodic(Duration(seconds: 1), (_) {
+        setState(() {
+          timerValue += Duration(seconds: 1);
+        });
+      });
+    } else {
+      _timer?.cancel();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,28 +59,18 @@ class _HomePageState extends State<HomePage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            // Timer Display
             Text(
               _formatDuration(timerValue),
               style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
-
-            // Start / Stop Button
             ElevatedButton.icon(
-              onPressed: () {
-                setState(() {
-                  isRunning = !isRunning;
-                });
-              },
+              onPressed: _toggleTimer,
               icon: Icon(isRunning ? Icons.pause : Icons.play_arrow),
               label: Text(isRunning ? 'Stop' : 'Start'),
             ),
-
             const SizedBox(height: 32),
             Divider(),
-
-            // Task List
             Expanded(
               child: ListView.builder(
                 itemCount: tasks.length,
@@ -78,6 +92,6 @@ class _HomePageState extends State<HomePage> {
   String _formatDuration(Duration d) {
     final minutes = d.inMinutes.remainder(60).toString().padLeft(2, '0');
     final seconds = d.inSeconds.remainder(60).toString().padLeft(2, '0');
-    return '${d.inHours}:$minutes:$seconds';
+    return '${d.inHours.toString().padLeft(2, '0')}:$minutes:$seconds';
   }
 }
