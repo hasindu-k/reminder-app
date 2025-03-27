@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:intl/intl.dart';
 import '../models/task.dart';
 import '../utils/duration_format.dart';
 
@@ -86,7 +87,7 @@ class _TaskCalendarScreenState extends State<TaskCalendarScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                'Tasks on ${_selectedDay!.toLocal().toIso8601String().split("T")[0]}',
+                'Tasks on ${DateFormat('yyyy-MM-dd').format(_selectedDay!)}',
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
@@ -95,8 +96,7 @@ class _TaskCalendarScreenState extends State<TaskCalendarScreen> {
               itemCount: selectedTasks.length,
               itemBuilder: (context, index) {
                 final task = selectedTasks[index];
-                final dateKey =
-                    '${_selectedDay!.year}-${_selectedDay!.month}-${_selectedDay!.day}';
+                final dateKey = DateFormat('yyyy-MM-dd').format(_selectedDay!);
                 final duration = Duration(seconds: task.history[dateKey] ?? 0);
                 return ListTile(
                   title: Text(task.title),

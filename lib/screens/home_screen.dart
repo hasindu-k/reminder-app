@@ -8,6 +8,7 @@ import '../services/task_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'task_history_screen.dart';
 import 'task_calendar_screen.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -33,14 +34,14 @@ class _HomeScreenState extends State<HomeScreen> {
     final prefs = await SharedPreferences.getInstance();
 
     final now = DateTime.now();
-    final todayKey = '${now.year}-${now.month}-${now.day}';
+    final todayKey = DateFormat('yyyy-MM-dd').format(now);
     final lastOpened = prefs.getString('lastOpenedDate');
 
     if (lastOpened != todayKey) {
-      // New day — reset timeSpent and log to history
       for (var task in loaded) {
         if (task.interval == 'daily' && task.timeSpent.inSeconds > 0) {
-          task.history[lastOpened ?? todayKey] = task.timeSpent.inSeconds;
+          final resetKey = lastOpened ?? todayKey;
+          task.history[resetKey] = task.timeSpent.inSeconds;
           task.timeSpent = Duration.zero;
         }
       }
