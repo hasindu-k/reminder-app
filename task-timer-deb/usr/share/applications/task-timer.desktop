@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=Task Timer
+Comment=Time your daily tasks
+Exec=/usr/bin/task-timer
+Icon=task-timer
+Terminal=false
+Type=Application
+Categories=Utility;TimeTracker;
+StartupNotify=true

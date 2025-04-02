@@ -1,0 +1,30 @@
+display_name: Task Timer
+package_name: task-timer
+maintainer:
+  name: Hasindu
+  email: koshithahasindu@gmail.com
+
+priority: optional
+section: utility
+installed_size: 8000 # Approximate in KB (can be adjusted)
+essential: false
+icon: assets/task.png
+
+postinstall_scripts:
+  - echo "✅ Task Timer installed successfully!"
+postuninstall_scripts:
+  - echo "❌ Task Timer has been removed."
+
+keywords:
+  - Task
+  - Timer
+  - Productivity
+  - Focus
+
+generic_name: Productivity Timer
+
+categories:
+  - Utility
+  - TimeTracker
+
+startup_notify: true
