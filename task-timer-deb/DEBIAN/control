@@ -1,0 +1,7 @@
+Package: task-timer
+Version: 1.0.0
+Section: utility
+Priority: optional
+Architecture: amd64
+Maintainer: Hasindu koshithahasindu@gmail.com
+Description: A simple Flutter-based task timer with daily tracking and reminders.
