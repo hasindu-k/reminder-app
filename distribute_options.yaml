@@ -1,0 +1,10 @@
+app_name: task_timer
+version: 1.0.0
+output_path: dist
+
+platforms:
+  - name: linux
+    jobs:
+      - package:
+          format: deb
+          icon: assets/task.png
