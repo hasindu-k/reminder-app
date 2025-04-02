@@ -7,7 +7,7 @@ class TaskTile extends StatelessWidget {
   final VoidCallback? onLongPress;
   final bool isActive;
 
-  const TaskTile({
+  const TaskTile({super.key, 
     required this.task,
     required this.onTap,
     this.onLongPress,
@@ -17,7 +17,7 @@ class TaskTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.task_alt_outlined),
+      leading: const Icon(Icons.task_alt_outlined),
       title: Text(task.title),
       subtitle: Text('Time: ${task.timeSpent.inMinutes} min'),
       trailing: Chip(label: Text(task.interval)),

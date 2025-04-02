@@ -9,7 +9,7 @@ class Task {
     this.interval = 'daily',
     this.timeSpent = Duration.zero,
     Map<String, int>? history,
-  }) : this.history = history ?? {};
+  }) : history = history ?? {};
 
   Map<String, dynamic> toJson() => {
         'title': title,

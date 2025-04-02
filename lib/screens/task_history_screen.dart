@@ -5,7 +5,7 @@ import '../utils/duration_format.dart';
 class TaskHistoryScreen extends StatefulWidget {
   final List<Task> tasks;
 
-  const TaskHistoryScreen({required this.tasks});
+  const TaskHistoryScreen({super.key, required this.tasks});
 
   @override
   State<TaskHistoryScreen> createState() => _TaskHistoryScreenState();
@@ -35,13 +35,13 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(title: Text('Task History')),
+      appBar: AppBar(title: const Text('Task History')),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: TextField(
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Search Tasks',
                 prefixIcon: Icon(Icons.search),
                 border: OutlineInputBorder(),
@@ -53,7 +53,7 @@ class _TaskHistoryScreenState extends State<TaskHistoryScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: DropdownButtonFormField<String>(
-                decoration: InputDecoration(labelText: 'Filter by Date'),
+                decoration: const InputDecoration(labelText: 'Filter by Date'),
                 value: _selectedDate,
                 items: [null, ...allDates].map((date) {
                   return DropdownMenuItem(

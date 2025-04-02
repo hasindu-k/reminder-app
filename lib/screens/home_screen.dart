@@ -11,6 +11,8 @@ import 'task_history_screen.dart';
 import 'task_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   State<HomeScreen> createState() => _HomeScreenState();
 }
@@ -71,11 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() => isRunning = !isRunning);
 
     if (isRunning) {
-      _timer = Timer.periodic(Duration(seconds: 1), (_) {
+      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (activeTask != null) {
           setState(() {
-            timerValue += Duration(seconds: 1);
-            activeTask!.timeSpent += Duration(seconds: 1);
+            timerValue += const Duration(seconds: 1);
+            activeTask!.timeSpent += const Duration(seconds: 1);
             _saveTasks();
           });
         }
@@ -93,13 +95,13 @@ class _HomeScreenState extends State<HomeScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Add New Task'),
+          title: const Text('Add New Task'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(labelText: 'Task Title'),
+                decoration: const InputDecoration(labelText: 'Task Title'),
               ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String>(
@@ -173,7 +175,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 8),
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(labelText: 'Task Title'),
+                decoration: const InputDecoration(labelText: 'Task Title'),
               ),
               DropdownButtonFormField<String>(
                 value: selectedInterval,
@@ -181,15 +183,15 @@ class _HomeScreenState extends State<HomeScreen> {
                     .map((i) => DropdownMenuItem(value: i, child: Text(i)))
                     .toList(),
                 onChanged: (val) => selectedInterval = val ?? selectedInterval,
-                decoration: InputDecoration(labelText: 'Interval'),
+                decoration: const InputDecoration(labelText: 'Interval'),
               ),
               const SizedBox(height: 12),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ElevatedButton.icon(
-                    icon: Icon(Icons.delete),
-                    label: Text('Delete'),
+                    icon: const Icon(Icons.delete),
+                    label: const Text('Delete'),
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.red),
                     onPressed: () {
@@ -202,8 +204,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
                   ElevatedButton.icon(
-                    icon: Icon(Icons.save),
-                    label: Text('Save'),
+                    icon: const Icon(Icons.save),
+                    label: const Text('Save'),
                     onPressed: () {
                       setState(() {
                         task.title = titleController.text.trim();
@@ -232,10 +234,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Task Timer'),
+        title: const Text('Task Timer'),
         actions: [
           IconButton(
-            icon: Icon(Icons.bar_chart),
+            icon: const Icon(Icons.bar_chart),
             onPressed: () {
               Navigator.push(
                 context,
@@ -245,7 +247,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.calendar_month),
+            icon: const Icon(Icons.calendar_month),
             onPressed: () {
               Navigator.push(
                 context,
@@ -264,12 +266,12 @@ class _HomeScreenState extends State<HomeScreen> {
             if (activeTask != null)
               Text(
                 'Current Task: ${activeTask!.title}',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
               ),
             const SizedBox(height: 8),
             Text(
               formatDuration(timerValue),
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 16),
             ElevatedButton.icon(
@@ -278,7 +280,7 @@ class _HomeScreenState extends State<HomeScreen> {
               label: Text(isRunning ? 'Stop' : 'Start'),
             ),
             const SizedBox(height: 32),
-            Divider(),
+            const Divider(),
             Expanded(
               child: ListView.builder(
                 itemCount: tasks.length,
@@ -308,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showAddTaskDialog,
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

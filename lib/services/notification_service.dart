@@ -77,7 +77,7 @@ class NotificationService {
     var scheduled =
         tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
     if (scheduled.isBefore(now)) {
-      scheduled = scheduled.add(Duration(days: 1));
+      scheduled = scheduled.add(const Duration(days: 1));
     }
     return scheduled;
   }

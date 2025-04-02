@@ -7,7 +7,7 @@ import '../utils/duration_format.dart';
 class TaskCalendarScreen extends StatefulWidget {
   final List<Task> tasks;
 
-  const TaskCalendarScreen({required this.tasks});
+  const TaskCalendarScreen({super.key, required this.tasks});
 
   @override
   State<TaskCalendarScreen> createState() => _TaskCalendarScreenState();
@@ -49,7 +49,7 @@ class _TaskCalendarScreenState extends State<TaskCalendarScreen> {
         _selectedDay != null ? _getTasksForDay(_selectedDay!) : [];
 
     return Scaffold(
-      appBar: AppBar(title: Text('Task Calendar')),
+      appBar: AppBar(title: const Text('Task Calendar')),
       body: Column(
         children: [
           TableCalendar(
@@ -71,7 +71,7 @@ class _TaskCalendarScreenState extends State<TaskCalendarScreen> {
                     child: Container(
                       width: 6,
                       height: 6,
-                      decoration: BoxDecoration(
+                      decoration: const BoxDecoration(
                         shape: BoxShape.circle,
                         color: Colors.blueAccent,
                       ),
